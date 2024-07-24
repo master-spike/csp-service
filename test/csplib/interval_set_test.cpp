@@ -4,10 +4,43 @@
 #include "csplib/interval_set.hpp"
 
 #include <type_traits>
+#include <array>
+#include <algorithm>
 
 namespace csplib {
 
 static_assert(std::is_same_v<interval_set<int>::value_type, int>, "");
+
+TEST_CASE("interval_set<int> : iterators") {
+
+    std::array<int, 12> sample_values = {
+        1,2,3,4,5,6,11,12,13,14,15,16
+    };
+
+    interval_set<int> test_iset;
+
+    std::for_each(sample_values.begin(), sample_values.end(), [&test_iset](int v) {
+        test_iset.add_value(v);
+    });
+
+    CHECK(std::equal(test_iset.begin(), test_iset.end(), sample_values.begin(), sample_values.end()));
+    CHECK(std::equal(test_iset.rbegin(), test_iset.rend(), sample_values.rbegin(), sample_values.rend()));
+
+    auto it = test_iset.begin();
+    CHECK(*it == 1);
+    ++it;
+    CHECK(*it == 2);
+
+    auto rit = test_iset.rbegin();
+    CHECK(*rit == 16);
+    ++rit;
+    CHECK(*rit == 15);
+    for (int i = 0; i < 5; ++i) {
+        ++rit;
+    }
+    CHECK(*rit == 6);
+
+}
 
 
 TEST_CASE("interval_set<int> : adding values") {
@@ -86,7 +119,7 @@ TEST_CASE("interval_set<int> : removing values") {
     CHECK(!set.contains(150));
 
     set.remove_range(980, 1000);
-    
+
     CHECK(!set.contains(980));
     CHECK(!set.contains(999));
     CHECK(!set.contains(1000));
@@ -94,13 +127,4 @@ TEST_CASE("interval_set<int> : removing values") {
 
 }
 
-
-
-
-
-
-
 }
-
-
-

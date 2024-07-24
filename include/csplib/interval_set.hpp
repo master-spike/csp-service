@@ -11,6 +11,10 @@ namespace csplib {
 
 template<std::integral T>
 class interval_set {
+public:
+    using value_type = T;
+    using reference = T&;
+    using const_reference = T const&;
 private:
     // represents an interval [l, u)
     struct interval {
@@ -30,9 +34,102 @@ private:
     };
 public:
 
-    using value_type = T;
-    using reference = T&;
-    using const_reference = T const&;
+    class iterator {
+    public:
+
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+
+        iterator(auto set_it, auto set_end, value_type v)
+        : iter(set_it), end(set_end), val(v) {}
+
+        bool operator==(iterator const& other) const {
+            if (iter == other.iter) {
+                return (val == other.val) || (iter == end);
+            }
+            return false;
+        }
+
+        iterator& operator++() {
+            if (iter == end) return *this;
+            ++val;
+            if (val == iter->upper) {
+                ++iter;
+                if (iter != end) {
+                    val = iter->lower;
+                }
+            }
+            return *this;
+        }
+
+        iterator operator++(int) {
+            iterator temp = *this;
+            ++(*this);
+            return temp;
+        }
+
+        iterator operator--() {
+            if (iter == end || val == iter->lower) {
+                --iter;
+                val = iter->upper;
+            }
+            --val;
+            return *this;
+        }
+
+        iterator operator--(int) {
+            iterator temp = *this;
+            --(*this);
+            return temp;
+        }
+
+        value_type operator*() const {
+            return val;
+        }
+        
+    private:
+        std::set<interval>::const_iterator iter;
+        std::set<interval>::const_iterator end;
+        value_type val;
+    };
+
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_iterator = iterator;
+    using const_reverse_iterator = reverse_iterator;
+
+    iterator begin() const {
+        return iterator(m_intervals.cbegin(), m_intervals.cend(), 
+            (m_intervals.cbegin() == m_intervals.cend() ? value_type() : m_intervals.cbegin()->lower));
+    }
+
+    iterator cbegin() const {
+        return begin();
+    }
+
+    reverse_iterator rbegin() const {
+        return std::make_reverse_iterator(end());
+    }
+
+    reverse_iterator crbegin() const {
+        return rbegin();
+    }
+
+    iterator end() const {
+        return iterator(m_intervals.cend(), m_intervals.cend(), 0);
+    }
+
+    iterator cend() const {
+        return end();
+    }
+
+    reverse_iterator rend() const {
+        return std::make_reverse_iterator(begin());
+    }
+
+    reverse_iterator crend() const {
+        return crend();
+    }
+
 
     void add_value(value_type val) {
         add_range(val, val+1);
