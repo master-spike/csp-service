@@ -40,6 +40,14 @@ TEST_CASE("interval_set<int> : iterators") {
     }
     CHECK(*rit == 6);
 
+    int count = 0;
+    for (auto v : test_iset) {
+        static_assert(std::is_same_v<decltype(v), decltype(test_iset)::value_type>, "iterator dereference type incorrect");
+        ++count;
+    }
+
+    CHECK(count == sample_values.size());
+
 }
 
 
