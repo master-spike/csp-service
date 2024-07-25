@@ -15,4 +15,3 @@ target_compile_features(csplib INTERFACE cxx_std_20)
 target_include_directories(csplib INTERFACE include)
 
 add_subdirectory(test)
-
