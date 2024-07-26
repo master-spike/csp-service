@@ -1,10 +1,8 @@
 #pragma once
 
-#include <cassert>
 #include <concepts>
 #include <set>
 #include <type_traits>
-#include <iostream>
 #include <limits>
 
 namespace csplib {
