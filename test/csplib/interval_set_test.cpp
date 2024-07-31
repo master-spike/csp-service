@@ -47,6 +47,7 @@ TEST_CASE("interval_set<int> : iterators") {
     }
 
     CHECK(count == sample_values.size());
+    CHECK(std::distance(test_iset.cbegin(), test_iset.cend()) == sample_values.size());
 
 }
 
